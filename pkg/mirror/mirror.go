@@ -5,21 +5,34 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/jynychen/mirror/pkg/logger"
 )
 
 type Mirror struct {
 	srcRepoURL  string
+	srcAuth     transport.AuthMethod
 	destRepoURL string
+	destAuth    transport.AuthMethod
 	logger      *logger.Logger
 }
 
-func New(srcRepoURL, destRepoURL string, logger *logger.Logger) *Mirror {
+type MirrorConfig struct {
+	SrcRepoURL  string
+	SrcAuth     transport.AuthMethod
+	DestRepoURL string
+	DestAuth    transport.AuthMethod
+	Logger      *logger.Logger
+}
+
+func New(cfg *MirrorConfig) *Mirror {
 	return &Mirror{
-		srcRepoURL:  srcRepoURL,
-		destRepoURL: destRepoURL,
-		logger:      logger,
+		srcRepoURL:  cfg.SrcRepoURL,
+		srcAuth:     cfg.SrcAuth,
+		destRepoURL: cfg.DestRepoURL,
+		destAuth:    cfg.DestAuth,
+		logger:      cfg.Logger,
 	}
 }
 
@@ -31,6 +44,7 @@ func (m *Mirror) Run() error {
 	m.logger.Println("Cloning source repo...")
 	srcRepo, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
 		URL:      m.srcRepoURL,
+		Auth:     m.srcAuth,
 		Progress: m.logger,
 		Mirror:   true,
 	})
@@ -49,6 +63,7 @@ func (m *Mirror) Run() error {
 	m.logger.Println("Pushing to destination repo...")
 	err = srcRepo.Push(&git.PushOptions{
 		RemoteName: mirror.Config().Name,
+		Auth:       m.destAuth,
 		RefSpecs:   []config.RefSpec{"+refs/*:refs/*"},
 		Progress:   m.logger,
 	})

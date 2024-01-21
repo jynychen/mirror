@@ -12,10 +12,11 @@ func init() {
 }
 
 func main() {
-	srcRepoURL := ""
-	destRepoURL := ""
+	cfg := &mirror.MirrorConfig{
+		Logger: appLogger,
+	}
 
-	if err := mirror.New(srcRepoURL, destRepoURL, appLogger).Run(); err != nil {
+	if err := mirror.New(cfg).Run(); err != nil {
 		appLogger.Fatalf("Mirror.Run() err: %v", err)
 	}
 }
