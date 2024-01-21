@@ -7,10 +7,10 @@ const (
 type MirrorConfigs []MirrorConfig
 
 type MirrorConfig struct {
-	SrcRepoURL  string `yaml:"src_repo_url"`
-	SrcSShKey   string `yaml:"src_ssh_key"`
-	DestRepoURL string `yaml:"dest_repo_url"`
-	DestSShKey  string `yaml:"dest_ssh_key"`
+	SrcRepoURL string `yaml:"src_repo_url"`
+	SrcSShKey  string `yaml:"src_ssh_key"`
+	DstRepoURL string `yaml:"dst_repo_url"`
+	DstSShKey  string `yaml:"dst_ssh_key"`
 }
 
 type Config struct {

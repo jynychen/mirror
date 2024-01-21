@@ -1,9 +1,9 @@
 mirror_configs:
   - src_repo_url: "{{first_src_repo_url}}"
     src_ssh_key: "{{first_src_ssh_key}}"
-    dest_repo_url: "{{first_dest_repo_url}}"
-    dest_ssh_key: "{{first_dest_ssh_key}}"
+    dst_repo_url: "{{first_dst_repo_url}}"
+    dst_ssh_key: "{{first_dst_ssh_key}}"
   - src_repo_url: "{{second_src_repo_url}}"
     src_ssh_key: "{{second_src_ssh_key}}"
-    dest_repo_url: "{{second_dest_repo_url}}"
-    dest_ssh_key: "{{second_dest_ssh_key}}"
+    dst_repo_url: "{{second_dst_repo_url}}"
+    dst_ssh_key: "{{second_dst_ssh_key}}"

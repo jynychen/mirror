@@ -15,28 +15,28 @@ const (
 )
 
 type Mirror struct {
-	srcRepoURL  string
-	srcAuth     transport.AuthMethod
-	destRepoURL string
-	destAuth    transport.AuthMethod
-	logger      *logger.Logger
+	srcRepoURL string
+	srcAuth    transport.AuthMethod
+	dstRepoURL string
+	dstAuth    transport.AuthMethod
+	logger     *logger.Logger
 }
 
 type MirrorConfig struct {
-	SrcRepoURL  string
-	SrcAuth     transport.AuthMethod
-	DestRepoURL string
-	DestAuth    transport.AuthMethod
-	Logger      *logger.Logger
+	SrcRepoURL string
+	SrcAuth    transport.AuthMethod
+	DstRepoURL string
+	DstAuth    transport.AuthMethod
+	Logger     *logger.Logger
 }
 
 func New(cfg *MirrorConfig) *Mirror {
 	return &Mirror{
-		srcRepoURL:  cfg.SrcRepoURL,
-		srcAuth:     cfg.SrcAuth,
-		destRepoURL: cfg.DestRepoURL,
-		destAuth:    cfg.DestAuth,
-		logger:      cfg.Logger,
+		srcRepoURL: cfg.SrcRepoURL,
+		srcAuth:    cfg.SrcAuth,
+		dstRepoURL: cfg.DstRepoURL,
+		dstAuth:    cfg.DstAuth,
+		logger:     cfg.Logger,
 	}
 }
 
@@ -45,16 +45,16 @@ func (m *Mirror) Run() error {
 	defer m.logger.Printf("End mirroring...\n\n")
 
 	if m.srcRepoURL == "" {
-		return ErrEmptySourceRepoURL
+		return ErrEmptySrcRepoURL
 	}
-	m.logger.Println("Source repo: ", m.srcRepoURL)
+	m.logger.Println("Source Repository: ", m.srcRepoURL)
 
-	if m.destRepoURL == "" {
-		return ErrEmptyDestinationURL
+	if m.dstRepoURL == "" {
+		return ErrEmptyDstRepoURL
 	}
-	m.logger.Println("Destination repo: ", m.destRepoURL)
+	m.logger.Println("Destination Repository: ", m.dstRepoURL)
 
-	m.logger.Println("Cloning source repo...")
+	m.logger.Println("Cloning source repository...")
 	srcRepo, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
 		URL:      m.srcRepoURL,
 		Auth:     m.srcAuth,
@@ -67,16 +67,16 @@ func (m *Mirror) Run() error {
 
 	_, err = srcRepo.CreateRemote(&config.RemoteConfig{
 		Name: MirrorRemote,
-		URLs: []string{m.destRepoURL},
+		URLs: []string{m.dstRepoURL},
 	})
 	if err != nil {
 		return err
 	}
 
-	m.logger.Println("Pushing to destination repo...")
+	m.logger.Println("Pushing to destination repository...")
 	err = srcRepo.Push(&git.PushOptions{
 		RemoteName: MirrorRemote,
-		Auth:       m.destAuth,
+		Auth:       m.dstAuth,
 		Progress:   m.logger,
 		RefSpecs: []config.RefSpec{
 			"+refs/*:refs/*",
