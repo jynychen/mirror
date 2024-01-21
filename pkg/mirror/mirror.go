@@ -7,7 +7,7 @@ import (
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/storage/memory"
-	"github.com/jynychen/mirror/pkg/logger"
+	"github.com/jyny/mirror/pkg/logger"
 )
 
 const (

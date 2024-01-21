@@ -1,4 +1,4 @@
-module github.com/jynychen/mirror
+module github.com/jyny/mirror
 
 go 1.21.6
 

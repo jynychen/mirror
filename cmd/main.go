@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/jynychen/mirror/pkg/config"
-	"github.com/jynychen/mirror/pkg/logger"
-	"github.com/jynychen/mirror/pkg/mirror"
+	"github.com/jyny/mirror/pkg/config"
+	"github.com/jyny/mirror/pkg/logger"
+	"github.com/jyny/mirror/pkg/mirror"
 	"gopkg.in/yaml.v3"
 )
 
