@@ -2,7 +2,10 @@ module github.com/jynychen/mirror
 
 go 1.21.6
 
-require github.com/go-git/go-git/v5 v5.11.0
+require (
+	github.com/go-git/go-git/v5 v5.11.0
+	gopkg.in/yaml.v3 v3.0.1
+)
 
 require (
 	dario.cat/mergo v1.0.0 // indirect

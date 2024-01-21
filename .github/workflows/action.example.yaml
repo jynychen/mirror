@@ -1,0 +1,28 @@
+name: Run mirror
+
+on:
+    workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: build and run
+      run: go run cmd/main.go
+      env:
+        CONFIG: ${{ vars.config }}
+        first_src_repo_url: ${{ secrets.first_src_repo_url }}
+        first_src_ssh_key: ${{ secrets.first_src_ssh_key }}
+        first_dst_repo_url: ${{ secrets.first_dst_repo_url }}
+        first_dst_ssh_key: ${{ secrets.first_dst_ssh_key }}
+        second_src_repo_url: ${{ secrets.second_src_repo_url }}
+        second_src_ssh_key: ${{ secrets.second_src_ssh_key }}
+        second_dst_repo_url: ${{ secrets.second_dst_repo_url }}
+        second_dst_ssh_key: ${{ secrets.second_dst_ssh_key }}
