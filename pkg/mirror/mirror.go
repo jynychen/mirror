@@ -10,6 +10,10 @@ import (
 	"github.com/jynychen/mirror/pkg/logger"
 )
 
+const (
+	MirrorRemote = "mirror"
+)
+
 type Mirror struct {
 	srcRepoURL  string
 	srcAuth     transport.AuthMethod
@@ -61,8 +65,8 @@ func (m *Mirror) Run() error {
 		return err
 	}
 
-	mirror, err := srcRepo.CreateRemote(&config.RemoteConfig{
-		Name: "mirror",
+	_, err = srcRepo.CreateRemote(&config.RemoteConfig{
+		Name: MirrorRemote,
 		URLs: []string{m.destRepoURL},
 	})
 	if err != nil {
@@ -71,10 +75,12 @@ func (m *Mirror) Run() error {
 
 	m.logger.Println("Pushing to destination repo...")
 	err = srcRepo.Push(&git.PushOptions{
-		RemoteName: mirror.Config().Name,
+		RemoteName: MirrorRemote,
 		Auth:       m.destAuth,
-		RefSpecs:   []config.RefSpec{"+refs/*:refs/*"},
 		Progress:   m.logger,
+		RefSpecs: []config.RefSpec{
+			"+refs/*:refs/*",
+		},
 	})
 	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
 		return err
