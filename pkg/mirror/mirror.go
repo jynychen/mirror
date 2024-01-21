@@ -38,7 +38,16 @@ func New(cfg *MirrorConfig) *Mirror {
 
 func (m *Mirror) Run() error {
 	m.logger.Println("Start mirroring...")
+	defer m.logger.Printf("End mirroring...\n\n")
+
+	if m.srcRepoURL == "" {
+		return ErrEmptySourceRepoURL
+	}
 	m.logger.Println("Source repo: ", m.srcRepoURL)
+
+	if m.destRepoURL == "" {
+		return ErrEmptyDestinationURL
+	}
 	m.logger.Println("Destination repo: ", m.destRepoURL)
 
 	m.logger.Println("Cloning source repo...")
@@ -71,6 +80,6 @@ func (m *Mirror) Run() error {
 		return err
 	}
 
-	m.logger.Println("Done!\n\n")
+	m.logger.Println("Successfully mirrored.")
 	return nil
 }
