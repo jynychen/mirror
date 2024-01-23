@@ -2,25 +2,31 @@ package logger
 
 import (
 	"bytes"
+	"io"
 	"log"
 	"os"
 	"sync"
 	"time"
 )
 
-type Logger struct {
+type Logger interface {
+	io.Writer
+	Println(v ...interface{})
+	Printf(format string, v ...interface{})
+}
+type LoggerWthWriter struct {
 	log.Logger
 	lock sync.Mutex
 }
 
-func New() *Logger {
-	return &Logger{
+func New() *LoggerWthWriter {
+	return &LoggerWthWriter{
 		*log.New(os.Stdout, "", log.LstdFlags),
 		sync.Mutex{},
 	}
 }
 
-func (l *Logger) Write(p []byte) (n int, err error) {
+func (l *LoggerWthWriter) Write(p []byte) (n int, err error) {
 	l.lock.Lock()
 	defer l.lock.Unlock()
 

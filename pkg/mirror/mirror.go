@@ -19,7 +19,7 @@ type Mirror struct {
 	srcAuth    transport.AuthMethod
 	dstRepoURL string
 	dstAuth    transport.AuthMethod
-	logger     *logger.Logger
+	logger     logger.Logger
 }
 
 type MirrorConfig struct {
@@ -27,7 +27,7 @@ type MirrorConfig struct {
 	SrcAuth    transport.AuthMethod
 	DstRepoURL string
 	DstAuth    transport.AuthMethod
-	Logger     *logger.Logger
+	Logger     logger.Logger
 }
 
 func New(cfg *MirrorConfig) *Mirror {

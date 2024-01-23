@@ -12,7 +12,7 @@ import (
 
 var (
 	appConfig   config.Config
-	appLogger   *logger.Logger
+	appLogger   logger.Logger
 	mirrorTasks []*mirror.Mirror
 )
 
