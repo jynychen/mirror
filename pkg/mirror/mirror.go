@@ -19,7 +19,7 @@ type Mirror struct {
 	srcAuth    transport.AuthMethod
 	dstRepoURL string
 	dstAuth    transport.AuthMethod
-	logger     *logger.Logger
+	logger     logger.Logger
 }
 
 type MirrorConfig struct {
@@ -27,7 +27,7 @@ type MirrorConfig struct {
 	SrcAuth    transport.AuthMethod
 	DstRepoURL string
 	DstAuth    transport.AuthMethod
-	Logger     *logger.Logger
+	Logger     logger.Logger
 }
 
 func New(cfg *MirrorConfig) *Mirror {
@@ -41,20 +41,22 @@ func New(cfg *MirrorConfig) *Mirror {
 }
 
 func (m *Mirror) Run() error {
-	m.logger.Println("Start mirroring...")
-	defer m.logger.Printf("End mirroring...\n\n")
+	m.logger.Info("Start mirroring...")
+	defer m.logger.Info("End mirroring...")
 
 	if m.srcRepoURL == "" {
+		m.logger.Error("validate src_repo_url", "err", ErrEmptySrcRepoURL)
 		return ErrEmptySrcRepoURL
 	}
-	m.logger.Println("Source Repository: ", m.srcRepoURL)
+	m.logger.Debug("Source:", "repo", m.srcRepoURL)
 
 	if m.dstRepoURL == "" {
+		m.logger.Error("validate dst_repo_url", "err", ErrEmptyDstRepoURL)
 		return ErrEmptyDstRepoURL
 	}
-	m.logger.Println("Destination Repository: ", m.dstRepoURL)
+	m.logger.Debug("Destination:", "repo", m.dstRepoURL)
 
-	m.logger.Println("Cloning source repository...")
+	m.logger.Info("Cloning source repository...")
 	srcRepo, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
 		URL:      m.srcRepoURL,
 		Auth:     m.srcAuth,
@@ -62,6 +64,7 @@ func (m *Mirror) Run() error {
 		Mirror:   true,
 	})
 	if err != nil {
+		m.logger.Error("failed to clone source repository", "err", err)
 		return err
 	}
 
@@ -70,10 +73,11 @@ func (m *Mirror) Run() error {
 		URLs: []string{m.dstRepoURL},
 	})
 	if err != nil {
+		m.logger.Error("failed to create remote", "err", err)
 		return err
 	}
 
-	m.logger.Println("Pushing to destination repository...")
+	m.logger.Info("Pushing to destination repository...")
 	err = srcRepo.Push(&git.PushOptions{
 		RemoteName: MirrorRemote,
 		Auth:       m.dstAuth,
@@ -83,9 +87,10 @@ func (m *Mirror) Run() error {
 		},
 	})
 	if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+		m.logger.Error("failed to push", "err", err)
 		return err
 	}
 
-	m.logger.Println("Successfully mirrored.")
+	m.logger.Debug("Successfully mirrored.")
 	return nil
 }

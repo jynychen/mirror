@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/jyny/mirror/pkg/config"
@@ -12,33 +12,34 @@ import (
 
 var (
 	appConfig   config.Config
-	appLogger   *logger.Logger
+	appLogger   logger.Logger
 	mirrorTasks []*mirror.Mirror
 )
 
 func init() {
+	appLogger = logger.New(os.Stdout)
+
 	if err := yaml.Unmarshal([]byte(os.Getenv(config.CONFIG_ENV)), &appConfig); err != nil {
-		log.Fatalf("Error config yaml.Unmarshal(): %v", err)
+		appLogger.Fatal("Error config yaml.Unmarshal():", "err", err)
 	}
 	if len(appConfig.MirrorConfigs) == 0 {
-		log.Fatalf("no mirror config found")
+		appLogger.Fatal("no mirror config found")
 	}
 
-	appLogger = logger.New()
+	for _, cfg := range appConfig.MirrorConfigs {
+		mirrorTasks = append(mirrorTasks, mirror.New(&mirror.MirrorConfig{
+			Logger:     appLogger,
+			SrcRepoURL: cfg.SrcRepoURL,
+			DstRepoURL: cfg.DstRepoURL,
+		}))
+	}
 }
 
 func main() {
-	for _, each := range appConfig.MirrorConfigs {
-		mirrorTasks = append(mirrorTasks, mirror.New(&mirror.MirrorConfig{
-			Logger:     appLogger,
-			SrcRepoURL: each.SrcRepoURL,
-			DstRepoURL: each.DstRepoURL,
-		}))
-	}
-
-	for _, each := range mirrorTasks {
-		if err := each.Run(); err != nil {
-			log.Printf("Error mirrorTask Run(): %v\n\n", err)
+	for _, mirrorTask := range mirrorTasks {
+		if err := mirrorTask.Run(); err != nil {
+			appLogger.Warn("Error mirrorTask.Run():", "err", err)
 		}
+		fmt.Println()
 	}
 }
