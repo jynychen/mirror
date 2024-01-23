@@ -3,25 +3,34 @@ package logger
 import (
 	"bytes"
 	"io"
-	"log"
-	"os"
 	"sync"
 	"time"
+
+	"github.com/charmbracelet/log"
 )
 
 type Logger interface {
 	io.Writer
-	Println(v ...interface{})
-	Printf(format string, v ...interface{})
+	Debug(msg interface{}, keyvals ...interface{})
+	Info(msg interface{}, keyvals ...interface{})
+	Warn(msg interface{}, keyvals ...interface{})
+	Error(msg interface{}, keyvals ...interface{})
+	Fatal(msg interface{}, keyvals ...interface{})
+	Print(msg interface{}, keyvals ...interface{})
 }
 type LoggerWthWriter struct {
-	log.Logger
+	io.Writer
+	*log.Logger
 	lock sync.Mutex
 }
 
-func New() *LoggerWthWriter {
+func New(writer io.Writer) *LoggerWthWriter {
+	logger := log.NewWithOptions(writer, log.Options{
+		ReportTimestamp: true,
+	})
 	return &LoggerWthWriter{
-		*log.New(os.Stdout, "", log.LstdFlags),
+		writer,
+		logger,
 		sync.Mutex{},
 	}
 }
@@ -37,5 +46,5 @@ func (l *LoggerWthWriter) Write(p []byte) (n int, err error) {
 		buf = append(buf, '\r')
 	}
 
-	return l.Logger.Writer().Write(buf)
+	return l.Writer.Write(buf)
 }
