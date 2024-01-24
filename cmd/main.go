@@ -30,13 +30,16 @@ func init() {
 		mirrorTasks = append(mirrorTasks, mirror.New(&mirror.MirrorConfig{
 			Logger:     appLogger,
 			SrcRepoURL: cfg.SrcRepoURL,
+			SrcAuth:    config.NewNewPublicKeysOrNil(cfg.SrcSShKey),
 			DstRepoURL: cfg.DstRepoURL,
+			DstAuth:    config.NewNewPublicKeysOrNil(cfg.DstSShKey),
 		}))
 	}
 }
 
 func main() {
 	for _, mirrorTask := range mirrorTasks {
+		fmt.Println()
 		if err := mirrorTask.Run(); err != nil {
 			appLogger.Warn("Error mirrorTask.Run():", "err", err)
 		}
