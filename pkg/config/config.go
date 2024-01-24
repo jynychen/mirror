@@ -1,5 +1,7 @@
 package config
 
+import "github.com/go-git/go-git/v5/plumbing/transport/ssh"
+
 const (
 	CONFIG_ENV = "CONFIG"
 )
@@ -15,4 +17,13 @@ type MirrorConfig struct {
 
 type Config struct {
 	MirrorConfigs MirrorConfigs `yaml:"mirror_configs"`
+}
+
+func NewNewPublicKeysOrNil(pemBytes string) ssh.AuthMethod {
+	pk, err := ssh.NewPublicKeys("git", []byte(pemBytes), "")
+	if err != nil {
+		return nil
+	}
+
+	return pk
 }
