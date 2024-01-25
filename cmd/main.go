@@ -29,10 +29,10 @@ func init() {
 	for _, cfg := range appConfig.MirrorConfigs {
 		mirrorTasks = append(mirrorTasks, mirror.New(&mirror.MirrorConfig{
 			Logger:     appLogger,
-			SrcRepoURL: cfg.SrcRepoURL,
-			SrcAuth:    config.NewNewPublicKeysOrNil(cfg.SrcSShKey),
-			DstRepoURL: cfg.DstRepoURL,
-			DstAuth:    config.NewNewPublicKeysOrNil(cfg.DstSShKey),
+			SrcRepoURL: os.Getenv(cfg.EnvSrcRepoURL),
+			SrcAuth:    config.NewNewPublicKeysOrNil(os.Getenv(cfg.EnvSrcSShKey)),
+			DstRepoURL: os.Getenv(cfg.EnvDstRepoURL),
+			DstAuth:    config.NewNewPublicKeysOrNil(os.Getenv(cfg.EnvDstSShKey)),
 		}))
 	}
 }
