@@ -1,6 +1,9 @@
 package config
 
-import "github.com/go-git/go-git/v5/plumbing/transport/ssh"
+import (
+	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
+	xssh "golang.org/x/crypto/ssh"
+)
 
 const (
 	CONFIG_ENV = "CONFIG"
@@ -25,5 +28,6 @@ func NewNewPublicKeysOrNil(pemBytes string) ssh.AuthMethod {
 		return nil
 	}
 
+	pk.HostKeyCallbackHelper.HostKeyCallback = xssh.InsecureIgnoreHostKey()
 	return pk
 }
