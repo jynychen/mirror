@@ -14,6 +14,7 @@ var (
 	appConfig   config.Config
 	appLogger   logger.Logger
 	mirrorTasks []*mirror.Mirror
+	errOccurred bool
 )
 
 func init() {
@@ -42,7 +43,12 @@ func main() {
 		fmt.Println()
 		if err := mirrorTask.Run(); err != nil {
 			appLogger.Warn("Error mirrorTask.Run():", "err", err)
+			errOccurred = true
 		}
 		fmt.Println()
+	}
+
+	if errOccurred {
+		os.Exit(1)
 	}
 }
